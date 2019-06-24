@@ -23,6 +23,10 @@ func (p *Packet) AvInitPacket() {
 	p.data = nil
 }
 
+func (p *Packet) GetPacketSize() int {
+	return int(p.size)
+}
+
 //Allocate the payload of a packet and initialize its fields with default values.
 func (p *Packet) AvNewPacket(s int) int {
 	return int(C.av_new_packet((*C.struct_AVPacket)(p), C.int(s)))

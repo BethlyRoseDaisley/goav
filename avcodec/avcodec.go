@@ -19,6 +19,10 @@ import (
 	"unsafe"
 )
 
+const (
+	AV_NOPTS_VALUE = int64(C.AV_NOPTS_VALUE)
+)
+
 type (
 	Codec                         C.struct_AVCodec
 	Context                       C.struct_AVCodecContext
