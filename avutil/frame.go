@@ -195,6 +195,22 @@ func GetBestEffortTimestamp(f *Frame) int64 {
 	return int64(f.best_effort_timestamp)
 }
 
+func GetPktPts(f *Frame) int64 {
+	return int64(f.pkt_pts)
+}
+
+func (f *Frame) Pts() int64 {
+	return int64(f.pts)
+}
+
+func (f *Frame) SetPts(pts int64) {
+	f.pts = (C.int64_t)(pts)
+}
+
+func (f *Frame) PictureType() AvPictureType {
+	return (AvPictureType)(f.pict_type)
+}
+
 // //static int get_video_buffer (Frame *frame, int align)
 // func GetVideoBuffer(f *Frame, a int) int {
 // 	return int(C.get_video_buffer(f, C.int(a)))

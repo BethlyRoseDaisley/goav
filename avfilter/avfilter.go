@@ -9,6 +9,9 @@ package avfilter
 /*
 	#cgo pkg-config: libavfilter
 	#include <libavfilter/avfilter.h>
+	#include <libavfilter/buffersrc.h>
+	#include <libavfilter/buffersink.h>
+	#include <libavutil/avutil.h>
 */
 import "C"
 import (
@@ -24,6 +27,7 @@ type (
 	Pad        C.struct_AVFilterPad
 	Dictionary C.struct_AVDictionary
 	Class      C.struct_AVClass
+	Frame      C.struct_AVFrame
 	MediaType  C.enum_AVMediaType
 )
 
@@ -125,4 +129,30 @@ func AvfilterInoutAlloc() *Input {
 //Free the supplied list of Input and set *inout to NULL.
 func AvfilterInoutFree(i *Input) {
 	C.avfilter_inout_free((**C.struct_AVFilterInOut)(unsafe.Pointer(i)))
+}
+
+func (i *Input)FilterContext() *Context {
+	return (*Context)(i.filter_ctx)
+}
+
+func (i *Input)Next() *Input {
+	return (*Input)(i.next)
+}
+
+func (i *Input)PadIdx() uint {
+	return (uint)(i.pad_idx)
+}
+
+func AvBufferSinkGetFrame(c *Context, f *Frame) int {
+	return (int)(C.av_buffersink_get_frame((*C.struct_AVFilterContext)(c), (*C.struct_AVFrame)(f)))
+}
+
+// keep ref
+func AvBuffersrcWriteFrame(c *Context, f *Frame) int {
+	return (int)(C.av_buffersrc_write_frame((*C.struct_AVFilterContext)(c), (*C.struct_AVFrame)(f)))
+}
+
+// copy
+func AvBuffersrcAddFrame(c *Context, f *Frame) int {
+	return (int)(C.av_buffersrc_add_frame((*C.struct_AVFilterContext)(c), (*C.struct_AVFrame)(f)))
 }
