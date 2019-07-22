@@ -57,7 +57,7 @@ func (ctxt *Context) AvCodecSetChromaIntraMatrix(t *uint16) {
 
 //Free the codec context and everything associated with it and write NULL to the provided pointer.
 func (ctxt *Context) AvcodecFreeContext() {
-	C.avcodec_free_context((**C.struct_AVCodecContext)(unsafe.Pointer(ctxt)))
+	C.avcodec_free_context((**C.struct_AVCodecContext)(unsafe.Pointer(&ctxt)))
 }
 
 //Set the fields of the given Context to default values corresponding to the given codec (defaults may be codec-dependent).
@@ -213,4 +213,32 @@ func (ctxt *Context) AvcodecSendFrame(frame *Frame) int {
 
 func (ctxt *Context) AvcodecReceivePacket(packet *Packet) int {
 	return (int)(C.avcodec_receive_packet((*C.struct_AVCodecContext)(ctxt), (*C.struct_AVPacket)(packet)))
+}
+
+func (ctxt *Context) AvcodecParametersToContext(pctxt *AvCodecParameters) int {
+	return (int)(C.avcodec_parameters_to_context((*C.struct_AVCodecContext)(ctxt), (*C.struct_AVCodecParameters)(pctxt)))
+}
+
+func (ctxt *Context) SetAudioEncodeParams(br int64, sr int, cl string, sf AvSampleFormat) {
+	ctxt.bit_rate   	= C.int64_t(br)
+	ctxt.sample_fmt 	= C.enum_AVSampleFormat(sf)
+	ctxt.sample_rate 	= C.int(sr)
+
+	Cstr := C.CString(cl)
+	defer C.free(unsafe.Pointer(Cstr))
+	ctxt.channel_layout = C.av_get_channel_layout(Cstr)
+
+	ctxt.channels       = C.av_get_channel_layout_nb_channels(ctxt.channel_layout)
+}
+
+func (ctxt *Context) SetAudioDecodeParams(br int64, sr int, cl string, sf AvSampleFormat) {
+	ctxt.bit_rate   	= C.int64_t(br)
+	ctxt.sample_fmt 	= C.enum_AVSampleFormat(sf)
+	ctxt.sample_rate 	= C.int(sr)
+
+	Cstr := C.CString(cl)
+	defer C.free(unsafe.Pointer(Cstr))
+	ctxt.channel_layout = C.av_get_channel_layout(Cstr)
+
+	ctxt.channels       = C.av_get_channel_layout_nb_channels(ctxt.channel_layout)
 }
